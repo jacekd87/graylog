@@ -1,0 +1,217 @@
+{
+  "extractors": [
+    {
+      "title": "Cisco Facility",
+      "extractor_type": "regex",
+      "converters": [
+        {
+          "type": "syslog_pri_facility",
+          "config": {}
+        }
+      ],
+      "order": 0,
+      "cursor_strategy": "copy",
+      "source_field": "message",
+      "target_field": "facility",
+      "extractor_config": {
+        "regex_value": "^<(\\d.+)>"
+      },
+      "condition_type": "none",
+      "condition_value": ""
+    },
+    {
+      "title": "Cisco Level",
+      "extractor_type": "regex",
+      "converters": [
+        {
+          "type": "syslog_pri_level",
+          "config": {}
+        }
+      ],
+      "order": 1,
+      "cursor_strategy": "copy",
+      "source_field": "message",
+      "target_field": "level",
+      "extractor_config": {
+        "regex_value": "^<(\\d.+)>"
+      },
+      "condition_type": "none",
+      "condition_value": ""
+    },
+    {
+      "title": "Cisco Local facility",
+      "extractor_type": "regex",
+      "converters": [
+        {
+          "type": "lowercase",
+          "config": {}
+        }
+      ],
+      "order": 4,
+      "cursor_strategy": "copy",
+      "source_field": "message",
+      "target_field": "local_facility",
+      "extractor_config": {
+        "regex_value": "%(.+?)-"
+      },
+      "condition_type": "none",
+      "condition_value": ""
+    },
+    {
+      "title": "Cisco Local level",
+      "extractor_type": "regex",
+      "converters": [
+        {
+          "type": "numeric",
+          "config": {}
+        }
+      ],
+      "order": 5,
+      "cursor_strategy": "copy",
+      "source_field": "message",
+      "target_field": "local_level",
+      "extractor_config": {
+        "regex_value": "%.+-(\\d?)-"
+      },
+      "condition_type": "none",
+      "condition_value": ""
+    },
+    {
+      "title": "Cisco Message",
+      "extractor_type": "regex",
+      "converters": [],
+      "order": 7,
+      "cursor_strategy": "copy",
+      "source_field": "message",
+      "target_field": "message",
+      "extractor_config": {
+        "regex_value": "%.+-\\d+-.+?: (.*)$"
+      },
+      "condition_type": "none",
+      "condition_value": ""
+    },
+    {
+      "title": "Cisco Source",
+      "extractor_type": "copy_input",
+      "converters": [],
+      "order": 0,
+      "cursor_strategy": "copy",
+      "source_field": "gl2_remote_ip",
+      "target_field": "source",
+      "extractor_config": {},
+      "condition_type": "none",
+      "condition_value": ""
+    },
+    {
+      "title": "Cisco Message Number",
+      "extractor_type": "regex",
+      "converters": [
+        {
+          "type": "lowercase",
+          "config": {}
+        }
+      ],
+      "order": 6,
+      "cursor_strategy": "copy",
+      "source_field": "message",
+      "target_field": "msg_number",
+      "extractor_config": {
+        "regex_value": "%.+-\\d-(.+?):"
+      },
+      "condition_type": "none",
+      "condition_value": ""
+    },
+    {
+      "title": "Cisco Timestamp",
+      "extractor_type": "regex",
+      "converters": [
+        {
+          "type": "flexdate",
+          "config": {
+            "time_zone": "Europe/Warsaw"
+          }
+        }
+      ],
+      "order": 0,
+      "cursor_strategy": "copy",
+      "source_field": "full_message",
+      "target_field": "timestamp",
+      "extractor_config": {
+        "regex_value": ">(.{3} \\d{2} \\d{4} \\d{2}:\\d{2}:\\d{2}): %"
+      },
+      "condition_type": "none",
+      "condition_value": ""
+    },
+    {
+      "title": "ASA TCP Denies",
+      "extractor_type": "grok",
+      "converters": [],
+      "order": 0,
+      "cursor_strategy": "copy",
+      "source_field": "message",
+      "target_field": "message",
+      "extractor_config": {
+        "grok_pattern": "%{IPORHOST:asa_dev} %ASA-\\d-(?<asa_messageid>106023): (?<asa_action>Deny) (?<asa_proto>tcp) src %{NOTSPACE:asa_interface_in}:%{IPV4:asa_src_ip}/%{BASE10NUM:asa_src_port} dst %{NOTSPACE:asa_interface_out}:%{IPV4:asa_dst_ip}/%{BASE10NUM:asa_dst_port} by access-group %{QUOTEDSTRING:asa_accesslist}"
+      },
+      "condition_type": "regex",
+      "condition_value": "(^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])|^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])) %ASA-\\d-106023: Deny tcp"
+    },
+    {
+      "title": "ASA UDP Denies",
+      "extractor_type": "grok",
+      "converters": [],
+      "order": 0,
+      "cursor_strategy": "copy",
+      "source_field": "message",
+      "target_field": "message",
+      "extractor_config": {
+        "grok_pattern": "%{IPORHOST:asa_dev} %ASA-\\d-(?<asa_messageid>106023): (?<asa_action>Deny) (?<asa_proto>udp) src %{NOTSPACE:asa_interface_in}:%{IPV4:asa_src_ip}/%{BASE10NUM:asa_src_port} dst %{NOTSPACE:asa_interface_out}:%{IPV4:asa_dst_ip}/%{BASE10NUM:asa_dst_port} by access-group %{QUOTEDSTRING:asa_accesslist}"
+      },
+      "condition_type": "regex",
+      "condition_value": "(^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])|^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])) %ASA-\\d-106023: Deny udp"
+    },
+    {
+      "title": "ASA TCP Drops",
+      "extractor_type": "grok",
+      "converters": [],
+      "order": 0,
+      "cursor_strategy": "copy",
+      "source_field": "message",
+      "target_field": "message",
+      "extractor_config": {
+        "grok_pattern": "%{IPORHOST:asa_dev} %ASA-\\d-(?<asa_messageid>106015): (?<asa_action>Deny) (?<asa_proto>TCP) %{DATA:asa_message} from %{IPV4:asa_src_ip}/%{BASE10NUM:asa_src_port} to %{IPV4:asa_dst_ip}/%{BASE10NUM:asa_dst_port} flags %{DATA:tcpflags} on interface %{DATA:asa_interface_in}$"
+      },
+      "condition_type": "regex",
+      "condition_value": "(^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])|^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])) %ASA-\\d-106015: Deny TCP"
+    },
+    {
+      "title": "ASA UDP Discards",
+      "extractor_type": "grok",
+      "converters": [],
+      "order": 0,
+      "cursor_strategy": "copy",
+      "source_field": "message",
+      "target_field": "message",
+      "extractor_config": {
+        "grok_pattern": "^%{IPORHOST:asa_dev} %ASA-\\d-(?<asa_messageid>710005): (?<asa_proto>UDP) request (?<asa_action>discarded) from %{IPV4:asa_src_ip}/%{BASE10NUM:asa_src_port} to %{DATA:asa_interface_in}:%{IPV4:asa_dst_ip}/%{BASE10NUM:asa_dst_port}$"
+      },
+      "condition_type": "regex",
+      "condition_value": "(^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])|^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])) %ASA-\\d-710005: UDP request discarded"
+    },
+    {
+      "title": "ASA TCP Discards",
+      "extractor_type": "grok",
+      "converters": [],
+      "order": 0,
+      "cursor_strategy": "copy",
+      "source_field": "message",
+      "target_field": "message",
+      "extractor_config": {
+        "grok_pattern": "^%{IPORHOST:asa_dev} %ASA-\\d-(?<asa_messageid>710005): (?<asa_proto>TCP) request (?<asa_action>discarded) from %{IPV4:asa_src_ip}/%{BASE10NUM:asa_src_port} to %{DATA:asa_interface_in}:%{IPV4:asa_dst_ip}/%{BASE10NUM:asa_dst_port}$"
+      },
+      "condition_type": "regex",
+      "condition_value": "(^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])|^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])) %ASA-\\d-710005: TCP request discarded"
+    }
+  ],
+  "version": "2.4.7"
+}
